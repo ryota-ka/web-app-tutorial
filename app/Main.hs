@@ -2,7 +2,9 @@
 
 module Main where
 
+import Control.Monad.Trans (liftIO)
 import Data.Aeson (ToJSON)
+import Data.IORef
 import Data.Monoid ((<>))
 import GHC.Generics (Generic)
 import Network.HTTP.Types
@@ -26,6 +28,8 @@ defaultTasks = [
 
 main :: IO ()
 main = do
+  ref <- newIORef defaultTasks
+
   scotty 8080 $ do
     get "/" $ do
       text "Hello, world!"
@@ -40,4 +44,8 @@ main = do
       redirect "/"
 
     get "/tasks" $ do
-      json defaultTasks
+      tasks <- liftIO $ readIORef ref
+      json tasks
+
+    post "/tasks" $ do
+      text "change me to add tasks!"
