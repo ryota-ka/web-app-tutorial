@@ -18,6 +18,16 @@ data Task = Task {
 
 instance ToJSON Task
 
+type Username = T.Text
+type Password = T.Text
+
+data User = User {
+    username :: Username
+  , password :: Password
+} deriving (Eq, Generic, Show)
+
+instance ToJSON User
+
 defaultTasks :: [Task]
 defaultTasks = [
     Task 1 "Haskellの勉強会を探す"
