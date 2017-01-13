@@ -5,6 +5,7 @@ module Main where
 import Control.Monad.Trans (liftIO)
 import Data.Aeson (ToJSON)
 import Data.IORef
+import Data.List (find)
 import Data.Monoid ((<>))
 import GHC.Generics (Generic)
 import Network.HTTP.Types
@@ -53,7 +54,9 @@ addTask ref title = atomicModifyIORef' ref transform
 
 currentUser :: ActionM (Maybe User)
 currentUser = do
-  undefined
+  u <- param "username"
+  p <- param "password"
+  return $ find (\user -> username user == u && password user == p) defaultUsers
 
 main :: IO ()
 main = do
