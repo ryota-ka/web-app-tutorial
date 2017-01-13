@@ -26,13 +26,13 @@ defaultTasks = [
   , Task 4 "ScottyでWebアプリケーションを作る"
   ]
 
-addTask :: IORef [Task] -> T.Text -> IO ()
-addTask ref title = modifyIORef ref transform
+addTask :: IORef [Task] -> T.Text -> IO Task
+addTask ref title = atomicModifyIORef' ref transform
   where
-    transform :: [Task] -> [Task]
+    transform :: [Task] -> ([Task], Task)
     transform tasks =
       let newTask = Task (length tasks + 1) title
-          in newTask:tasks
+          in (newTask:tasks, newTask)
 
 main :: IO ()
 main = do
@@ -57,8 +57,6 @@ main = do
 
     post "/tasks" $ do
       title <- param "title"
-      liftIO $ addTask ref title
-      tasks <- liftIO $ readIORef ref
-      let newTask = head tasks
+      newTask <- liftIO $ addTask ref title
       status status201
       json newTask
