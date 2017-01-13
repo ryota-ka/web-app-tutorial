@@ -54,9 +54,13 @@ addTask ref title = atomicModifyIORef' ref transform
 
 currentUser :: ActionM (Maybe User)
 currentUser = do
-  u <- param "username"
-  p <- param "password"
-  return $ find (\user -> username user == u && password user == p) defaultUsers
+  maybeUsername <- safeParam "username"
+  maybePassword <- safeParam "password"
+  let maybeUser =
+        case (maybeUsername, maybePassword) of
+             (Just u, Just p) -> find (== User u p) defaultUsers
+             (_, _) -> Nothing
+  return maybeUser
 
 safeParam :: Parsable a => T.Text -> ActionM (Maybe a)
 safeParam key = do
