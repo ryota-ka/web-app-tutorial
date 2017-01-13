@@ -51,6 +51,10 @@ addTask ref title = atomicModifyIORef' ref transform
       let newTask = Task (length tasks + 1) title
           in (newTask:tasks, newTask)
 
+currentUser :: ActionM (Maybe User)
+currentUser = do
+  undefined
+
 main :: IO ()
 main = do
   ref <- newIORef defaultTasks
@@ -67,6 +71,12 @@ main = do
       status status302
       setHeader "X-Foo-Bar" "bazqux"
       redirect "/"
+
+    post "/login" $ do
+      maybeUser <- currentUser
+      case maybeUser of
+           Nothing -> status status401 >> text "authorization required"
+           Just user -> text $ "Hello, " <> username user <> "!"
 
     get "/tasks" $ do
       tasks <- liftIO $ readIORef ref
