@@ -58,6 +58,17 @@ currentUser = do
   p <- param "password"
   return $ find (\user -> username user == u && password user == p) defaultUsers
 
+safeParam :: Parsable a => T.Text -> ActionM (Maybe a)
+safeParam key = do
+  params' <- params
+  let value = snd <$> find ((== key) . fst) params'
+  let parsedValue = case value of
+                         Nothing -> Nothing
+                         Just value -> case parseParam value of
+                                            Left _ -> Nothing
+                                            Right v -> Just v
+  return parsedValue
+
 main :: IO ()
 main = do
   ref <- newIORef defaultTasks
