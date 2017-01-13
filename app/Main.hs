@@ -36,6 +36,13 @@ defaultTasks = [
   , Task 4 "ScottyでWebアプリケーションを作る"
   ]
 
+defaultUsers :: [User]
+defaultUsers = [
+    User "alice"   "password"
+  , User "bob"     "12345678"
+  , User "charlie" "qwerty"
+  ]
+
 addTask :: IORef [Task] -> T.Text -> IO Task
 addTask ref title = atomicModifyIORef' ref transform
   where
