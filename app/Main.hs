@@ -26,6 +26,14 @@ defaultTasks = [
   , Task 4 "ScottyでWebアプリケーションを作る"
   ]
 
+addTask :: IORef [Task] -> T.Text -> IO ()
+addTask ref title = modifyIORef ref transform
+  where
+    transform :: [Task] -> [Task]
+    transform tasks =
+      let newTask = Task (length tasks + 1) title
+          in newTask:tasks
+
 main :: IO ()
 main = do
   ref <- newIORef defaultTasks
@@ -48,4 +56,9 @@ main = do
       json tasks
 
     post "/tasks" $ do
-      text "change me to add tasks!"
+      title <- param "title"
+      liftIO $ addTask ref title
+      tasks <- liftIO $ readIORef ref
+      let newTask = head tasks
+      status status201
+      json newTask
