@@ -33,6 +33,8 @@ data Error = Error { errorMessage :: T.Text } deriving (Generic, Show)
 
 instance ToJSON Error
 
+type AppState = ([Task], [User])
+
 defaultTasks :: [Task]
 defaultTasks = [
     Task 1 "Haskellの勉強会を探す"
