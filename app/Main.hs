@@ -132,6 +132,19 @@ main = do
         status status201
         json newTask
 
+    get "/tasks/:id" $ do
+      authenticateUser $ \authenticatedUser -> do
+        maybeTaskId <- safeParam "id"
+        case maybeTaskId of
+             Nothing -> status status404 >> json (Error "not found")
+             Just passedTaskId -> do
+               tasks <- fst <$> (liftIO $ readIORef ref)
+               let ownTasks = filter ((== authenticatedUser) . user) tasks
+                   maybeTask = find ((== passedTaskId) . taskId) ownTasks
+               case maybeTask of
+                    Nothing -> status status404 >> json (Error "not found")
+                    Just task -> json task
+
     post "/users" $ do
       maybeUser <- currentUser
       case maybeUser of
