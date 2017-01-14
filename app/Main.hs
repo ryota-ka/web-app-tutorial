@@ -29,6 +29,10 @@ data User = User {
 
 instance ToJSON User
 
+data Error = Error { errorMessage :: T.Text } deriving (Generic, Show)
+
+instance ToJSON Error
+
 defaultTasks :: [Task]
 defaultTasks = [
     Task 1 "Haskellの勉強会を探す"
