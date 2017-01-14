@@ -78,6 +78,13 @@ currentUser = do
              (_, _) -> Nothing
   return maybeUser
 
+authenticateUser :: (User -> ActionM ()) -> ActionM ()
+authenticateUser f = do
+  maybeUser <- currentUser
+  case maybeUser of
+       Nothing -> status status401 >> json (Error "unauthorized")
+       Just user -> f user
+
 safeParam :: Parsable a => T.Text -> ActionM (Maybe a)
 safeParam key = do
   params' <- params
