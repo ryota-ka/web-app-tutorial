@@ -120,23 +120,17 @@ main = do
            Just user -> text $ "Hello, " <> username user <> "!"
 
     get "/tasks" $ do
-      maybeUser <- currentUser
-      case maybeUser of
-           Nothing -> status status401 >> text "unauthorized"
-           Just authenticatedUser -> do
-             tasks <- fst <$> (liftIO $ readIORef ref)
-             let ownTasks = filter ((== authenticatedUser) . user) tasks
-             json tasks
+      authenticateUser $ \authenticatedUser -> do
+        tasks <- fst <$> (liftIO $ readIORef ref)
+        let ownTasks = filter ((== authenticatedUser) . user) tasks
+        json tasks
 
     post "/tasks" $ do
-      maybeUser <- currentUser
-      case maybeUser of
-           Nothing -> status status401 >> text "unauthorized"
-           Just authenticatedUser -> do
-             title <- param "title"
-             newTask <- liftIO $ addTask ref title authenticatedUser
-             status status201
-             json newTask
+      authenticateUser $ \authenticatedUser -> do
+        title <- param "title"
+        newTask <- liftIO $ addTask ref title authenticatedUser
+        status status201
+        json newTask
 
     post "/users" $ do
       maybeUser <- currentUser
