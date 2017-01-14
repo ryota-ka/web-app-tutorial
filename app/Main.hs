@@ -117,3 +117,12 @@ main = do
       newTask <- liftIO $ addTask ref title
       status status201
       json newTask
+
+    post "/users" $ do
+      maybeUser <- currentUser
+      case maybeUser of
+           Nothing -> status status401 >> json (Error "username and password required")
+           Just user -> do
+             newUser <- liftIO $ addUser ref user
+             status status201
+             json newUser
