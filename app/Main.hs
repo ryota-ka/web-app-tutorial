@@ -50,13 +50,13 @@ defaultUsers = [
   , User "charlie" "qwerty"
   ]
 
-addTask :: IORef [Task] -> T.Text -> IO Task
+addTask :: IORef AppState -> T.Text -> IO Task
 addTask ref title = atomicModifyIORef' ref transform
   where
-    transform :: [Task] -> ([Task], Task)
-    transform tasks =
+    transform :: AppState -> (AppState, Task)
+    transform (tasks, users) =
       let newTask = Task (length tasks + 1) title
-          in (newTask:tasks, newTask)
+          in ((newTask:tasks, users), newTask)
 
 currentUser :: ActionM (Maybe User)
 currentUser = do
