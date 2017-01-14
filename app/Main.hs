@@ -58,6 +58,12 @@ addTask ref title = atomicModifyIORef' ref transform
       let newTask = Task (length tasks + 1) title
           in ((newTask:tasks, users), newTask)
 
+addUser :: IORef AppState -> User -> IO User
+addUser ref user = atomicModifyIORef' ref transform
+  where
+    transform :: AppState -> (AppState, User)
+    transform (tasks, users) = ((tasks, user:users), user)
+
 currentUser :: ActionM (Maybe User)
 currentUser = do
   maybeUsername <- safeParam "username"
