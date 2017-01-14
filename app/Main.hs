@@ -87,7 +87,7 @@ safeParam key = do
 
 main :: IO ()
 main = do
-  ref <- newIORef defaultTasks
+  ref <- newIORef (defaultTasks, defaultUsers)
 
   scotty 8080 $ do
     get "/" $ do
@@ -109,7 +109,7 @@ main = do
            Just user -> text $ "Hello, " <> username user <> "!"
 
     get "/tasks" $ do
-      tasks <- liftIO $ readIORef ref
+      tasks <- fst <$> (liftIO $ readIORef ref)
       json tasks
 
     post "/tasks" $ do
